@@ -1,7 +1,7 @@
 #%%
 import json
 from pathlib import Path
-from utils import get_phons, get_ref_heteronyms
+from utils import get_phons, get_ref_heteronyms, write_json
 
 if not Path('moe.json').exists():
     import gdown
@@ -33,5 +33,4 @@ for i, x in enumerate(d):
                 phon[t] = p
 
 
-with open('moe_char_phon.json', "w", encoding="utf-8") as f:
-    json.dump(phon, f, ensure_ascii=False, separators=(',', ':'))
+write_json(phon, 'moe_char_phon.json')

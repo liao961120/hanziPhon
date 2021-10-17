@@ -1,6 +1,6 @@
-from os import readlink
 import re
 import csv
+import json
 from dragonmapper.transcriptions import *
 
 pat_hetero = re.compile(r'「(.+?)」的異體字')
@@ -9,13 +9,52 @@ tone_bpm = 'ˊˇˋ˙'
 tone_py = '12345'
 
 red = '（語音） （又音） （讀音） (又音) (讀音)'.split()
-
+red2 = '（語音） （又音） （讀音） \(又音\) \(讀音\)'.split()
+red2 = [ re.compile(f"{x}.*") for x in red2 ]
 
 pinyin_custom = (
     # ori   corrected
     ('yúng', 'yóng'),
     ('lüǎn', 'lǖǎn'),
 )
+
+
+def get_word_phons(x:dict):
+    phons = []
+    for h in x.get('heteronyms', []):
+        bpm = h.get('bopomofo', '').strip()
+        pinyin = h.get('pinyin', '').strip()
+        if len(bpm.split()) <= 1: continue
+
+        # Clean up
+        for pat in red2:
+            bpm = pat.sub('', bpm).strip()
+            pinyin = pat.sub('', pinyin).strip()
+        
+        bpm = tuple(bpm.split())
+        pinyin = tuple(accented_syllable_to_numbered(x) for x in pinyin.split())
+
+        phons.append({
+            'bpm': bpm,
+            'pinyin': pinyin,
+        })
+    
+    return phons
+
+
+def get_toned_bpm(d:dict):
+    t = d['tone']
+    tone = {
+        '1': '',
+        '2': 'ˊ',
+        '3': 'ˇ',
+        '4': 'ˋ',
+        '5': '˙',
+    }
+    if t == '5':
+        return '˙' + d['bpm']
+    return d['bpm'] + tone[t]
+
 
 def get_phons(x:dict):
     phons = []
@@ -80,3 +119,13 @@ with open('transcriptions.csv', encoding="utf-8", newline='') as f:
 
 def bpm_to_ipa(bpm):
     return bpm_ipa_map[bpm]
+
+
+def write_json(obj, fp):
+    with open(fp, "w", encoding="utf-8") as f:
+        json.dump(obj, f, ensure_ascii=False, separators=(',', ':'))
+
+
+def load_json(fp):
+    with open(fp, encoding='utf-8') as f:
+        return json.load(f)
