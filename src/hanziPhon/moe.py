@@ -14,8 +14,8 @@ class Moe:
     def __init__(self, lexicon:set=None) -> None:
         self._load()
         if lexicon:
-            for w in lexicon:
-                if w in self.data: del self.data[w]
+            for w in set(self.data.keys()).difference(lexicon):
+                del self.data[w]
 
         # Reverse index
         self.phon = { 'bpm': {}, 'pinyin': {}, 'ipa': {}, 'tone': {} }
