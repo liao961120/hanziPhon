@@ -15,7 +15,7 @@ setuptools.setup(
     package_dir = {'': 'src'},
     packages=['hanziPhon'],
     package_data={
-        "": ["data/*.txt", "data/*.json"],
+        "": ["data/*.txt", "data/*.json", "data/*.csv"],
     },
     classifiers=[
         "Programming Language :: Python :: 3",
