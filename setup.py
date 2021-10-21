@@ -3,9 +3,12 @@ import setuptools
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
+with open("VERSION") as f:
+      v = int(f.read().strip())
+
 setuptools.setup(
-    name="hanziPhon", # Replace with your own username
-    version="0.0.1",
+    name="hanziPhon",
+    version=f"0.0.{v}",
     author="Yongfu Liao",
     author_email="liao961120@gmail.com",
     description="Hanzi phonetic interface",
